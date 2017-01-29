@@ -42,10 +42,10 @@
   <h3 class="col-xs-12"><span class="glyphicon glyphicon-search "></span> Manual Manipulations Control</h3>
   <p>
 
-    <button id="up">Up</button>
-    <button id="down">Down</button>
-    <button id="left">Left</button>
-    <button id="right">Right</button>
+    <button  class="btn btn-danger"id="up">Up</button>
+    <button class="btn btn-success" id="down">Down</button>
+    <button id="left" class="btn btn-info">Left</button>
+    <button id="right" class="btn btn-primary">Right</button>
 
   </p>
 </div>
@@ -65,244 +65,251 @@
 
 
 
-      // This example adds a marker to indicate the position of Bondi Beach in Sydney,
-      // Australia.
+  // This example adds a marker to indicate the position of Bondi Beach in Sydney,
+  // Australia.
 
-      var pos = { lat: 37.7749, lng: -122.4274 };
-      var request = {
-        location: pos,
-        radius: '2000',
-        types: ['museum','art_gallery','zoo','amusement_park'],
-        rankby: 'distance'
-      };
-
-      var map;
-      var userLocation;
-      var UserCircle;
-      var markers = [];
-      var markerCluster;
-      var labels = 'ABC';
-
-      var service;
-
-      var places = [];
-
-      var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+  var pos = { lat: 37.7749, lng: -122.4274 };
 
 
-      var t = true;
-       refreshPage();
-
-      function initMap() {
-
-
-        map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 15,
-          center: pos,
-          styles: [
-            { elementType: 'geometry', stylers: [{ color: '#043475' }] },
-            { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
-            { elementType: 'labels.text.fill', stylers: [{ color: '#e5a239' }] },
-            {
-
-              elementType: "labels.icon",
-              stylers: [{ "visibility": "off" }]
-            },
-            {
-              featureType: 'road',
-              elementType: 'geometry',
-              stylers: [{ color: '#3a7ad1' }]
-            },
-            {
-              featureType: 'road',
-              elementType: 'geometry.stroke',
-              stylers: [{ color: '#212a37' }]
-            },
-            {
-              featureType: 'road',
-              elementType: 'labels.text.fill',
-              stylers: [{ color: '#9ca5b3' }]
-            },
+  var request = {
+    location: pos,
+    radius: '2000',
+    types: ['museum', 'art_gallery', 'zoo', 'amusement_park'],
+    rankby: 'distance'
+  };
 
 
-            {
-              featureType: 'water',
-              elementType: 'geometry',
-              stylers: [{ color: '#17263c' }]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.fill',
-              stylers: [{ color: '#515c6d' }]
-            },
-            {
-              featureType: 'water',
-              elementType: 'labels.text.stroke',
-              stylers: [{ color: '#17263c' }]
-            }
-          ]
-        });
+  var map;
+  var userLocation;
+  var UserCircle;
+  var markers = [];
+  var markerCluster;
+  var labels = 'ABC';
+  var infoWindow;
 
-        service = new google.maps.places.PlacesService(map);
+  var service;
+  var url ="https://maps.googleapis.com/maps/api/place/details/json?"; 
+  var Url;
+  var places = [];
 
+  var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+
+  refreshPage();
+
+  function initMap() {
 
 
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 15,
+      center: pos,
+      styles: [
+        { elementType: 'geometry', stylers: [{ color: '#043475' }] },
+        { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+        { elementType: 'labels.text.fill', stylers: [{ color: '#e5a239' }] },
+        {
 
-        userLocation = new google.maps.Marker({
-          position: pos,
-          map: map,
-          icon: image
-        });
+          elementType: "labels.icon",
+          stylers: [{ "visibility": "off" }]
+        },
+        {
+          featureType: 'road',
+          elementType: 'geometry',
+          stylers: [{ color: '#3a7ad1' }]
+        },
+        {
+          featureType: 'road',
+          elementType: 'geometry.stroke',
+          stylers: [{ color: '#212a37' }]
+        },
+        {
+          featureType: 'road',
+          elementType: 'labels.text.fill',
+          stylers: [{ color: '#9ca5b3' }]
+        },
 
 
-        markers.push(userLocation);
-
-        for (var i = 0; i < 8; i++) {
-          markers.push(new google.maps.Marker({
-            map: map
-          }));
+        {
+          featureType: 'water',
+          elementType: 'geometry',
+          stylers: [{ color: '#17263c' }]
+        },
+        {
+          featureType: 'water',
+          elementType: 'labels.text.fill',
+          stylers: [{ color: '#515c6d' }]
+        },
+        {
+          featureType: 'water',
+          elementType: 'labels.text.stroke',
+          stylers: [{ color: '#17263c' }]
         }
-        service.nearbySearch(request, callback);
-
-        // locations.map(function(location, i) {
-        //   markers.push(new google.maps.Marker({
-        //     position: location,
-        //     label: labels[i % labels.length]
-        //     })); 
-        // });
-
-        // markerCluster = new MarkerClusterer(map, markers,{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-
-        //add circle around user
-        UserCircle = new google.maps.Circle({
-          strokeColor: 'blue',
-          strokeOpacity: 0.7,
-          strokeWeight: 2,
-          fillColor: 'white',
-          fillOpacity: 0.35,
-          map: map,
-          center: pos,
-          radius: 2000
-        });
+      ]
 
 
-        var up = document.getElementById('up');
-        var down = document.getElementById('down');
-        var left = document.getElementById('left');
-        var right = document.getElementById('right');
+    });
 
-        google.maps.event.addDomListener(right, 'click', function () {
-          //go right
-          if ((pos["lng"] + 0.001) > 180) {
-            pos["lng"] = pos["lng"] - 360;
-          } else {
-            pos["lng"] += 0.001;
-          }
-          update();
-        });
+    service = new google.maps.places.PlacesService(map);
 
 
-        google.maps.event.addDomListener(left, 'click', function () {
-          //go left
-
-          if ((pos["lng"] - 0.001) < (-180)) {
-            pos["lng"] = 360 + pos["lng"];
-          } else {
-            pos["lng"] -= 0.001;
-          }
-          update();
-        });
-
-        google.maps.event.addDomListener(down, 'click', function () {
-          // go down
-
-          if ((pos["lat"] - 0.001) >= (-90)) {
-            pos["lat"] -= 0.001;
-            update();
-          }
-
-        });
-        google.maps.event.addDomListener(up, 'click', function () {
-          if ((pos["lat"] + 0.001) <= 90) {
-            pos["lat"] += 0.001;
-            update();
-          }
+    userLocation = new google.maps.Marker({
+      position: pos,
+      map: map,
+      icon: image
+    });
 
 
-        });
+    markers.push(userLocation);
+
+    for (var i = 0; i < 8; i++) {
+      markers.push(new google.maps.Marker({
+        map: map
+      }));
+    }
+    service.nearbySearch(request, callback);
+
+    // locations.map(function(location, i) {
+    //   markers.push(new google.maps.Marker({
+    //     position: location,
+    //     label: labels[i % labels.length]
+    //     })); 
+    // });
+
+    // markerCluster = new MarkerClusterer(map, markers,{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+    //add circle around user
+    UserCircle = new google.maps.Circle({
+      strokeColor: 'blue',
+      strokeOpacity: 0.7,
+      strokeWeight: 2,
+      fillColor: 'white',
+      fillOpacity: 0.35,
+      map: map,
+      center: pos,
+      radius: 2000
+    });
 
 
+    var up = document.getElementById('up');
+    var down = document.getElementById('down');
+    var left = document.getElementById('left');
+    var right = document.getElementById('right');
 
+    google.maps.event.addDomListener(right, 'click', function () {
+      //go right
+      if ((pos["lng"] + 0.001) > 180) {
+        pos["lng"] = pos["lng"] - 360;
+      } else {
+        pos["lng"] += 0.001;
       }
-      function update(){
-          map.setCenter(pos);
-          userLocation.setPosition(pos);
-          UserCircle.setCenter(pos);
+      update();
+    });
+
+
+    google.maps.event.addDomListener(left, 'click', function () {
+      //go left
+
+      if ((pos["lng"] - 0.001) < (-180)) {
+        pos["lng"] = 360 + pos["lng"];
+      } else {
+        pos["lng"] -= 0.001;
       }
+      update();
+    });
 
-      function refreshPage() {
+    google.maps.event.addDomListener(down, 'click', function () {
+      // go down
 
-        setInterval(function () {
-
-          updateMap();
-
-        }, 5000);
-
+      if ((pos["lat"] - 0.001) >= (-90)) {
+        pos["lat"] -= 0.001;
+        update();
       }
 
+    });
+    google.maps.event.addDomListener(up, 'click', function () {
+      if ((pos["lat"] + 0.001) <= 90) {
+        pos["lat"] += 0.001;
+        update();
+      }
 
-function refreshPage(){
 
-       setInterval(function () {
+    });
 
-        updateMap();
+
+
+  }
+  function update() {
+    map.setCenter(pos);
+    userLocation.setPosition(pos);
+    UserCircle.setCenter(pos);
+
+  }
+
+  function refreshPage() {
+
+    setInterval(function () {
+
+      updateMap();
 
     }, 5000);
 
-}
+  }
 
 
-function updateMap(){
+  function refreshPage() {
 
-      service.nearbySearch(request,callback);
-}
+    setInterval(function () {
 
-function callback(results, status) {
-  places=[];
+      updateMap();
 
-  if(results.length < markers.length-1){
-    var i;
-    for(i=1;i<results.length;i++){
-      markers[i].setPosition(results[i].geometry.location);
-      markers[i].setTitle(results[i].name);
-      markers[i].setLabel(results[i].name);
-      markers[i].setMap(map);
 
-      places.push(results[i]);
-    }
-
-    for(i;i<markers.length;i++){
-      markers[i].setMap(null);
-    }
-
-  }else{
-    for(var i=1;i<markers.length;i++){
-      markers[i].setPosition(results[i].geometry.location);
-      markers[i].setTitle(results[i].name);
-      markers[i].setLabel(results[i].name);
-      markers[i].setMap(map);
-      places.push(results[i]);
-    }
+    }, 5000);
 
   }
-}
 
 
-    </script>
+  function updateMap() {
+
+    service.nearbySearch(request, callback);
+    console.log(places[0]);
+  }
+
+  function callback(results, status) {
+    places = [];
+
+    if (results.length < markers.length - 1) {
+      var i;
+      for (i = 1; i < results.length; i++) {
+        markers[i].setPosition(results[i].geometry.location);
+        markers[i].setTitle(results[i].name);
+        markers[i].setLabel(results[i].name);
+        markers[i].setMap(map);
+
+        places.push(results[i]);
+      }
+
+      for (i; i < markers.length; i++) {
+        markers[i].setMap(null);
+      }
+      
+
+    } else {
+      for (var i = 1; i < markers.length; i++) {
+        markers[i].setPosition(results[i].geometry.location);
+        markers[i].setTitle(results[i].name);
+        markers[i].setLabel(results[i].name);
+        markers[i].setMap(map);
+        places.push(results[i]);
+      }
+
+    }
+  }
+
+
+</script>
 
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpSAXsBvs1m0o5SUlF54Z8bFM6DPNvnQk&callback=initMap&libraries=places,geometry">
-    </script>
+</script>
 <script src="js/bootstrap.min.js"></script>
 
 
