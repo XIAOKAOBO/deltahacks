@@ -46,7 +46,7 @@
     <button class="btn btn-success" id="down">Down</button>
     <button id="left" class="btn btn-info">Left</button>
     <button id="right" class="btn btn-primary">Right</button>
-  </div>
+    </div>
   </p>
 </div>
 </div>
@@ -60,6 +60,7 @@
 </body>
 <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
 
 <script>
 
@@ -67,34 +68,38 @@
 
   // This example adds a marker to indicate the position of Bondi Beach in Sydney,
   // Australia.
+      // This example adds a marker to indicate the position of Bondi Beach in Sydney,
+      // Australia.
 
-  var pos = { lat: 37.7749, lng: -122.4274 };
+      var pos={lat: 37.769900000000014, lng: -122.45740000000015};
+      var request = {
+            location: pos,
+            radius: '2000',
+            types: ['museum', 'art_gallery','park', 'zoo','stadium','university','church','aquarium'],
+            rankby:'distance'
+      };
+      var map;
+      var userLocation;
+      var UserCircle;
+      var markers=[];
+      var markerCluster;
+      var labels = 'ABC';
+
+      var service;
+
+      var places=[];
+
+      var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+
+      var queue=[];
+      var hasInQueue={};
+      var content={};
 
 
-  var request = {
-    location: pos,
-    radius: '2000',
-    types: ['museum', 'art_gallery', 'zoo', 'amusement_park'],
-    rankby: 'distance'
-  };
+      refreshPage();
 
+      readAvailabelGuide();
 
-  var map;
-  var userLocation;
-  var UserCircle;
-  var markers = [];
-  var markerCluster;
-  var labels = 'ABC';
-  var infoWindow;
-
-  var service;
-  var url ="https://maps.googleapis.com/maps/api/place/details/json?"; 
-  var Url;
-  var places = [];
-
-  var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
-
-  refreshPage();
 
   function initMap() {
 
@@ -156,7 +161,7 @@
       map: map,
       icon: image
     });
-
+    
 
     markers.push(userLocation);
 
@@ -167,16 +172,7 @@
     }
     service.nearbySearch(request, callback);
 
-    // locations.map(function(location, i) {
-    //   markers.push(new google.maps.Marker({
-    //     position: location,
-    //     label: labels[i % labels.length]
-    //     })); 
-    // });
 
-    // markerCluster = new MarkerClusterer(map, markers,{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-
-    //add circle around user
     UserCircle = new google.maps.Circle({
       strokeColor: 'blue',
       strokeOpacity: 0.7,
@@ -185,7 +181,7 @@
       fillOpacity: 0.35,
       map: map,
       center: pos,
-      radius: 2000
+      radius: 200
     });
 
 
@@ -249,6 +245,7 @@
     setInterval(function () {
 
       updateMap();
+      checkAvailableGuide();
 
     }, 5000);
 
@@ -260,7 +257,7 @@
     setInterval(function () {
 
       updateMap();
-
+      checkAvailableGuide();
 
     }, 5000);
 
@@ -268,41 +265,92 @@
 
 
   function updateMap() {
-
+        
     service.nearbySearch(request, callback);
-    console.log(places[0]);
+
   }
 
-  function callback(results, status) {
-    places = [];
+  function checkAvailableGuide(){
+  places.map(function(pl){
+    if(distance(pl.geometry.location, userLocation.getPosition()) <=200){
 
-    if (results.length < markers.length - 1) {
-      var i;
-      for (i = 1; i < results.length; i++) {
-        markers[i].setPosition(results[i].geometry.location);
-        markers[i].setTitle(results[i].name);
-        markers[i].setLabel(results[i].name);
-        markers[i].setMap(map);
-
-        places.push(results[i]);
-      }
-
-      for (i; i < markers.length; i++) {
-        markers[i].setMap(null);
+      if( !hasInQueue.hasOwnProperty(pl.name)){
+        queue.push(pl);
+        hasInQueue[pl.name]=true;
       }
       
-
-    } else {
-      for (var i = 1; i < markers.length; i++) {
-        markers[i].setPosition(results[i].geometry.location);
-        markers[i].setTitle(results[i].name);
-        markers[i].setLabel(results[i].name);
-        markers[i].setMap(map);
-        places.push(results[i]);
-      }
-
     }
+  });
+}
+
+function readAvailabelGuide(){
+  setInterval(function () {
+
+    if(queue.length>0){
+      var landmark=queue.shift();
+      var text;
+
+      var WikiUrl='https://en.wikipedia.org/w/api.php?action=opensearch&search='+landmark.name+'&format=json&callback=wikiCallback';
+
+      $.ajax({
+        url:WikiUrl,
+        dataType: 'jsonp',
+        //jsonp: "callback"
+        success: function(response){
+
+            text=response[2][0];
+            console.log(text);
+            content[landmark.name]=text;
+             responsiveVoice.speak(text, "UK English Male",{rate:0.8});
+            
+        }
+
+    });
+
+
+      //console.log(landmark.name);
+     
+    }
+
+  },2000);
+}
+
+  function callback(results, status) {
+    places=[];
+
+  if(results.length < markers.length-1){
+    var i;
+    for(i=1;i<results.length;i++){
+      markers[i].setPosition(results[i].geometry.location);
+      markers[i].setTitle(results[i].name);
+      markers[i].setLabel(results[i].name);
+      markers[i].setMap(map);
+
+      places.push(results[i]);
+    }
+
+    for(i;i<markers.length;i++){
+      markers[i].setMap(null);
+    }
+
+  }else{
+    for(var i=1;i<markers.length;i++){
+      markers[i].setPosition(results[i].geometry.location);
+      markers[i].setTitle(results[i].name);
+      markers[i].setLabel(results[i].name);
+      markers[i].setMap(map);
+      places.push(results[i]);
+    }
+
   }
+  }
+
+  
+function distance(p1,p2){
+  return google.maps.geometry.spherical.computeDistanceBetween(p1,p2);
+
+}
+
 
 
 </script>
