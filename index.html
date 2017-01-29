@@ -42,10 +42,10 @@
   <h3 class="col-xs-12"><span class="glyphicon glyphicon-search "></span> Manual Manipulations Control</h3>
   <p>
     <div class="btn-group">
-    <button  class="btn btn-danger"id="up">Up</button>
-    <button class="btn btn-success" id="down">Down</button>
-    <button id="left" class="btn btn-info">Left</button>
-    <button id="right" class="btn btn-primary">Right</button>
+      <button class="btn btn-danger" id="up">Up</button>
+      <button class="btn btn-success" id="down">Down</button>
+      <button id="left" class="btn btn-info">Left</button>
+      <button id="right" class="btn btn-primary">Right</button>
     </div>
   </p>
 </div>
@@ -56,44 +56,51 @@
   <div id="map" style="width:100% col-xs-12" ></div>
 </div>
 <div class="row row-footer"></div>
+<audio src="ppap.mp3" id="ppap" autoplay loop></audio>
+<script>
+  var aud = document.getElementById("ppap");
+  aud.volume = 0.1;
+</script>
 </div>
 </body>
 <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
+<script src="http://code.responsivevoice.org/responsivevoice.js">
+
+    </script>
 
 <script>
 
 
 
-  // This example adds a marker to indicate the position of Bondi Beach in Sydney,
-  // Australia.
+      // This example adds a marker to indicate the position of Bondi Beach in Sydney,
+      // Australia.
       // This example adds a marker to indicate the position of Bondi Beach in Sydney,
       // Australia.
 
-      var pos={lat: 37.769900000000014, lng: -122.45740000000015};
+      var pos = { lat: 37.769900000000014, lng: -122.45740000000015 };
       var request = {
-            location: pos,
-            radius: '2000',
-            types: ['museum', 'art_gallery','park', 'zoo','stadium','university','church','aquarium'],
-            rankby:'distance'
+        location: pos,
+        radius: '2000',
+        types: ['museum', 'art_gallery', 'park', 'zoo', 'stadium', 'university', 'church', 'aquarium'],
+        rankby: 'distance'
       };
       var map;
       var userLocation;
       var UserCircle;
-      var markers=[];
+      var markers = [];
       var markerCluster;
       var labels = 'ABC';
 
       var service;
 
-      var places=[];
+      var places = [];
 
       var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
 
-      var queue=[];
-      var hasInQueue={};
-      var content={};
+      var queue = [];
+      var hasInQueue = {};
+      var content = {};
 
 
       refreshPage();
@@ -101,269 +108,269 @@
       readAvailabelGuide();
 
 
-  function initMap() {
+      function initMap() {
 
 
-    map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 15,
-      center: pos,
-      styles: [
-        { elementType: 'geometry', stylers: [{ color: '#043475' }] },
-        { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
-        { elementType: 'labels.text.fill', stylers: [{ color: '#e5a239' }] },
-        {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: pos,
+          styles: [
+            { elementType: 'geometry', stylers: [{ color: '#043475' }] },
+            { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+            { elementType: 'labels.text.fill', stylers: [{ color: '#e5a239' }] },
+            {
 
-          elementType: "labels.icon",
-          stylers: [{ "visibility": "off" }]
-        },
-        {
-          featureType: 'road',
-          elementType: 'geometry',
-          stylers: [{ color: '#3a7ad1' }]
-        },
-        {
-          featureType: 'road',
-          elementType: 'geometry.stroke',
-          stylers: [{ color: '#212a37' }]
-        },
-        {
-          featureType: 'road',
-          elementType: 'labels.text.fill',
-          stylers: [{ color: '#9ca5b3' }]
-        },
-
-
-        {
-          featureType: 'water',
-          elementType: 'geometry',
-          stylers: [{ color: '#17263c' }]
-        },
-        {
-          featureType: 'water',
-          elementType: 'labels.text.fill',
-          stylers: [{ color: '#515c6d' }]
-        },
-        {
-          featureType: 'water',
-          elementType: 'labels.text.stroke',
-          stylers: [{ color: '#17263c' }]
-        }
-      ]
+              elementType: "labels.icon",
+              stylers: [{ "visibility": "off" }]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry',
+              stylers: [{ color: '#3a7ad1' }]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry.stroke',
+              stylers: [{ color: '#212a37' }]
+            },
+            {
+              featureType: 'road',
+              elementType: 'labels.text.fill',
+              stylers: [{ color: '#9ca5b3' }]
+            },
 
 
-    });
-
-    service = new google.maps.places.PlacesService(map);
-
-
-    userLocation = new google.maps.Marker({
-      position: pos,
-      map: map,
-      icon: image
-    });
-    
-
-markers.push(userLocation);
-    for (var i = 0; i < 8; i++) {
-      markers.push(new google.maps.Marker({
-        icon: {
-      path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-      strokeColor: '#CD2B8F',
-      
-      strokeWeight: 3,
-      scale: 6,
-        },
-        map: map
-      }));
-    }
-    service.nearbySearch(request, callback);
-
-
-    UserCircle = new google.maps.Circle({
-      strokeColor: 'blue',
-      strokeOpacity: 0.7,
-      strokeWeight: 2,
-      fillColor: 'white',
-      fillOpacity: 0.35,
-      map: map,
-      center: pos,
-      radius: 200
-    });
-
-
-    var up = document.getElementById('up');
-    var down = document.getElementById('down');
-    var left = document.getElementById('left');
-    var right = document.getElementById('right');
-
-    google.maps.event.addDomListener(right, 'click', function () {
-      //go right
-      if ((pos["lng"] + 0.001) > 180) {
-        pos["lng"] = pos["lng"] - 360;
-      } else {
-        pos["lng"] += 0.001;
-      }
-      update();
-    });
-
-
-    google.maps.event.addDomListener(left, 'click', function () {
-      //go left
-
-      if ((pos["lng"] - 0.001) < (-180)) {
-        pos["lng"] = 360 + pos["lng"];
-      } else {
-        pos["lng"] -= 0.001;
-      }
-      update();
-    });
-
-    google.maps.event.addDomListener(down, 'click', function () {
-      // go down
-
-      if ((pos["lat"] - 0.001) >= (-90)) {
-        pos["lat"] -= 0.001;
-        update();
-      }
-
-    });
-    google.maps.event.addDomListener(up, 'click', function () {
-      if ((pos["lat"] + 0.001) <= 90) {
-        pos["lat"] += 0.001;
-        update();
-      }
-
-
-    });
-
-
-
-  }
-  function update() {
-    map.setCenter(pos);
-    userLocation.setPosition(pos);
-    UserCircle.setCenter(pos);
-
-  }
-
-  function refreshPage() {
-
-    setInterval(function () {
-
-      updateMap();
-      checkAvailableGuide();
-
-    }, 5000);
-
-  }
-
-
-  function refreshPage() {
-
-    setInterval(function () {
-
-      updateMap();
-      checkAvailableGuide();
-
-    }, 5000);
-
-  }
-
-
-  function updateMap() {
-        
-    service.nearbySearch(request, callback);
-
-  }
-
-  function checkAvailableGuide(){
-  places.map(function(pl){
-    if(distance(pl.geometry.location, userLocation.getPosition()) <=200){
-
-      if( !hasInQueue.hasOwnProperty(pl.name)){
-        queue.push(pl);
-        hasInQueue[pl.name]=true;
-      }
-      
-    }
-  });
-}
-
-function readAvailabelGuide(){
-  setInterval(function () {
-
-    if(queue.length>0){
-      var landmark=queue.shift();
-      var text;
-
-      var WikiUrl='https://en.wikipedia.org/w/api.php?action=opensearch&search='+landmark.name+'&format=json&callback=wikiCallback';
-
-      $.ajax({
-        url:WikiUrl,
-        dataType: 'jsonp',
-        //jsonp: "callback"
-        success: function(response){
-            if( !( typeof response === "undefined")){
-                text=response[2][0];
-            console.log(text);
-             if( ( typeof text === "undefined") || text==''){
-               text=landmark.name;
-             }
-
-            content[landmark.name]=text;
-             responsiveVoice.speak(text, "UK English Male",{rate:0.8});
-            }else{
-              responsiveVoice.speak(landmark.name, "UK English Male",{rate:0.8});
+            {
+              featureType: 'water',
+              elementType: 'geometry',
+              stylers: [{ color: '#17263c' }]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.fill',
+              stylers: [{ color: '#515c6d' }]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.stroke',
+              stylers: [{ color: '#17263c' }]
             }
-            
-            
+          ]
+
+
+        });
+
+        service = new google.maps.places.PlacesService(map);
+
+
+        userLocation = new google.maps.Marker({
+          position: pos,
+          map: map,
+          icon: image
+        });
+
+
+        markers.push(userLocation);
+        for (var i = 0; i < 8; i++) {
+          markers.push(new google.maps.Marker({
+            icon: {
+              path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+              strokeColor: '#CD2B8F',
+
+              strokeWeight: 3,
+              scale: 6,
+            },
+            map: map
+          }));
         }
+        service.nearbySearch(request, callback);
 
-    });
+
+        UserCircle = new google.maps.Circle({
+          strokeColor: 'blue',
+          strokeOpacity: 0.7,
+          strokeWeight: 2,
+          fillColor: 'white',
+          fillOpacity: 0.35,
+          map: map,
+          center: pos,
+          radius: 200
+        });
 
 
-      //console.log(landmark.name);
-     
-    }
+        var up = document.getElementById('up');
+        var down = document.getElementById('down');
+        var left = document.getElementById('left');
+        var right = document.getElementById('right');
 
-  },2000);
-}
+        google.maps.event.addDomListener(right, 'click', function () {
+          //go right
+          if ((pos["lng"] + 0.001) > 180) {
+            pos["lng"] = pos["lng"] - 360;
+          } else {
+            pos["lng"] += 0.001;
+          }
+          update();
+        });
 
-  function callback(results, status) {
-    places=[];
 
-  if(results.length < markers.length-1){
-    var i;
-    for(i=1;i<results.length;i++){
-      markers[i].setPosition(results[i].geometry.location);
-      markers[i].setTitle(results[i].name);
-      markers[i].setLabel(results[i].name);
-      markers[i].setMap(map);
+        google.maps.event.addDomListener(left, 'click', function () {
+          //go left
 
-      places.push(results[i]);
-    }
+          if ((pos["lng"] - 0.001) < (-180)) {
+            pos["lng"] = 360 + pos["lng"];
+          } else {
+            pos["lng"] -= 0.001;
+          }
+          update();
+        });
 
-    for(i;i<markers.length;i++){
-      markers[i].setMap(null);
-    }
+        google.maps.event.addDomListener(down, 'click', function () {
+          // go down
 
-  }else{
-    for(var i=1;i<markers.length;i++){
-      markers[i].setPosition(results[i].geometry.location);
-      markers[i].setTitle(results[i].name);
-      markers[i].setLabel(results[i].name);
-      markers[i].setMap(map);
-      places.push(results[i]);
-    }
+          if ((pos["lat"] - 0.001) >= (-90)) {
+            pos["lat"] -= 0.001;
+            update();
+          }
 
-  }
-  }
+        });
+        google.maps.event.addDomListener(up, 'click', function () {
+          if ((pos["lat"] + 0.001) <= 90) {
+            pos["lat"] += 0.001;
+            update();
+          }
 
-  
-function distance(p1,p2){
-  return google.maps.geometry.spherical.computeDistanceBetween(p1,p2);
 
-}
+        });
+
+
+
+      }
+      function update() {
+        map.setCenter(pos);
+        userLocation.setPosition(pos);
+        UserCircle.setCenter(pos);
+
+      }
+
+      function refreshPage() {
+
+        setInterval(function () {
+
+          updateMap();
+          checkAvailableGuide();
+
+        }, 5000);
+
+      }
+
+
+      function refreshPage() {
+
+        setInterval(function () {
+
+          updateMap();
+          checkAvailableGuide();
+
+        }, 5000);
+
+      }
+
+
+      function updateMap() {
+
+        service.nearbySearch(request, callback);
+
+      }
+
+      function checkAvailableGuide() {
+        places.map(function (pl) {
+          if (distance(pl.geometry.location, userLocation.getPosition()) <= 200) {
+
+            if (!hasInQueue.hasOwnProperty(pl.name)) {
+              queue.push(pl);
+              hasInQueue[pl.name] = true;
+            }
+
+          }
+        });
+      }
+
+      function readAvailabelGuide() {
+        setInterval(function () {
+
+          if (queue.length > 0) {
+            var landmark = queue.shift();
+            var text;
+
+            var WikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + landmark.name + '&format=json&callback=wikiCallback';
+
+            $.ajax({
+              url: WikiUrl,
+              dataType: 'jsonp',
+              //jsonp: "callback"
+              success: function (response) {
+                if (!(typeof response === "undefined")) {
+                  text = response[2][0];
+                  console.log(text);
+                  if ((typeof text === "undefined") || text == '') {
+                    text = landmark.name;
+                  }
+
+                  content[landmark.name] = text;
+                  responsiveVoice.speak(text, "UK English Male", { rate: 0.8 });
+                } else {
+                  responsiveVoice.speak(landmark.name, "UK English Male", { rate: 0.8 });
+                }
+
+
+              }
+
+            });
+
+
+            //console.log(landmark.name);
+
+          }
+
+        }, 2000);
+      }
+
+      function callback(results, status) {
+        places = [];
+
+        if (results.length < markers.length - 1) {
+          var i;
+          for (i = 1; i < results.length; i++) {
+            markers[i].setPosition(results[i].geometry.location);
+            markers[i].setTitle(results[i].name);
+            markers[i].setLabel(results[i].name);
+            markers[i].setMap(map);
+
+            places.push(results[i]);
+          }
+
+          for (i; i < markers.length; i++) {
+            markers[i].setMap(null);
+          }
+
+        } else {
+          for (var i = 1; i < markers.length; i++) {
+            markers[i].setPosition(results[i].geometry.location);
+            markers[i].setTitle(results[i].name);
+            markers[i].setLabel(results[i].name);
+            markers[i].setMap(map);
+            places.push(results[i]);
+          }
+
+        }
+      }
+
+
+      function distance(p1, p2) {
+        return google.maps.geometry.spherical.computeDistanceBetween(p1, p2);
+
+      }
 
 
 
