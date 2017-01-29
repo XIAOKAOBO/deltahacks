@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Walking Guide | DeltaHacks </title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/mystyles.css" rel="stylesheet">
+        <link href="css/bootstrap-social.css" rel="stylesheet">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        width: 100%;
+        height:600px;
+        padding: 20px;
+      }
+
+      html{
+        margin:0;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div class="container">
+    
+    <div class="row row-content" style="background-color: black">
+        <div class="col-sm-12 col-xs-12">
+        <h2 style="color:white;text-indent: 10px"><span class="glyphicon glyphicon-map-marker"></span> Walking Guide Web PPAP <small style="color:white;col-xs-12">Easy Web App to Discover Your Surroundings</small></h2>
+        </div>
+    </div>
+
+    <div class="row row-content" style="background-color:yellow">
+        <div class="col-sm-12">
+        <h3 class="col-xs-12"><span class="glyphicon glyphicon-search "></span> Manual Manipulations Control</h3>
+        <p>
+            
+            <button id="up">Up</button>
+            <button id="down">Down</button>
+            <button id="left">Left</button>
+            <button id="right">Right</button>
+
+        </p>
+        </div>
+    </div>
+
+
+    <div class="row row-content">
+        <div id="map" style="width:100% col-xs-12" ></div>
+    </div>
+    <div class="row row-footer"></div>
+    </div>
+    </body>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <script>
+
+
+
+      // This example adds a marker to indicate the position of Bondi Beach in Sydney,
+      // Australia.
+
+      var pos={lat:37.7749,lng:-122.4274};
+      var request = {
+            location: pos,
+            radius: '2000',
+            types: 'museum'| 'art_gallery'|'amusement_park'| 'zoo',
+            rankby:'distance'
+      };
+      var map;
+      var userLocation;
+      var UserCircle;
+      var markers=[];
+      var markerCluster;
+      var labels = 'ABC';
+
+      var service;
+
+      var places=[];
+
+      var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+
+
+      var t=true;
+      updateMap();
+
+      function initMap() {
+        
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: pos,
+           styles: [
+            {elementType: 'geometry', stylers: [{color: '#043475'}]},
+            {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+            {elementType: 'labels.text.fill', stylers: [{color: '#e5a239'}]},
+            {
+             
+             elementType: "labels.icon",
+             stylers: [{ "visibility": "off" }]
+             },
+            {
+              featureType: 'road',
+              elementType: 'geometry',
+              stylers: [{color: '#3a7ad1'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry.stroke',
+              stylers: [{color: '#212a37'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#9ca5b3'}]
+            },
+            
+            
+            {
+              featureType: 'water',
+              elementType: 'geometry',
+              stylers: [{color: '#17263c'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#515c6d'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.stroke',
+              stylers: [{color: '#17263c'}]
+            }
+          ]
+        });
+
+
+
+        
+        
+        service= new google.maps.places.PlacesService(map);
+
+         userLocation= new google.maps.Marker({
+          position: pos,
+          map: map,
+          icon: image
+        });
+
+        
+        markers.push(userLocation);
+
+        service.nearbySearch(request,callback);
+
+        // locations.map(function(location, i) {
+        //   markers.push(new google.maps.Marker({
+        //     position: location,
+        //     label: labels[i % labels.length]
+        //     })); 
+        // });
+
+        // markerCluster = new MarkerClusterer(map, markers,{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+        //add circle around user
+        UserCircle = new google.maps.Circle({
+            strokeColor: 'blue',
+            strokeOpacity: 0.7,
+            strokeWeight: 2,
+            fillColor: 'white',
+            fillOpacity: 0.35,
+            map: map,
+            center: pos,
+            radius: 2000
+          });
+
+
+        var up=document.getElementById('up');
+        var down=document.getElementById('down');
+        var left=document.getElementById('left');
+        var right=document.getElementById('right');
+
+        google.maps.event.addDomListener(right, 'click', function(){
+            //go right
+            if((pos["lng"]+0.001)> 180){
+              pos["lng"]= pos["lng"]-360;
+            }else{
+              pos["lng"]+=0.001; 
+            }
+            update();
+        });
+
+
+        google.maps.event.addDomListener(left, 'click', function(){
+            //go left
+         
+            if((pos["lng"]-0.001)< (-180)){
+              pos["lng"]=360+pos["lng"];
+            }else{
+              pos["lng"]-= 0.001;
+            }
+            update();
+        });
+
+        google.maps.event.addDomListener(down, 'click', function(){
+            // go down
+         
+            if((pos["lat"]-0.001) >= (-90)){
+                pos["lat"] -= 0.001;
+                update();
+            }
+
+        });
+        google.maps.event.addDomListener(up, 'click', function() {
+            if((pos["lat"]+0.001) <= 90){
+                pos["lat"] +=0.001;
+                update();
+            }
+            
+
+        });
+
+
+
+      }
+
+
+      function update(){
+          map.setCenter(pos);
+          userLocation.setPosition(pos);
+          UserCircle.setCenter(pos);
+      }
+
+
+    function updateMap(){
+
+       setInterval(function(){
+
+           for (var i = 0; i < markers.length; i++) {
+             markers[i].setMap(null);
+             
+            }
+      
+            markers = [];
+            userLocation=null;
+            places=[];
+
+            userLocation= new google.maps.Marker({
+            position: pos,
+            map: map,
+            icon: image
+            });
+
+        
+            markers.push(userLocation);
+
+            service.nearbySearch(request,callback);
+
+         
+
+        // markerCluster = new MarkerClusterer(map, markers,{imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+        //update();
+
+         
+       
+            }, 3000);
+
+    }
+    
+
+
+
+
+function callback(results, status) {
+            for (var j = 0; j < results.length; j++) {
+                //console.log("One of them is " + results[j].name + ": at " + results[j].geometry.location);
+                //createMarker(results[j]);
+                places.push(results[j]);
+                places.map(function(pl) {
+          markers.push(new google.maps.Marker({
+            map: map,
+            position: pl.geometry.location,
+            label: pl.name
+            })); 
+        });
+            }
+}
+
+
+
+
+    </script>
+
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpSAXsBvs1m0o5SUlF54Z8bFM6DPNvnQk&callback=initMap&libraries=places">
+    </script>
+            <script src="js/bootstrap.min.js"></script>    
+        
+
+</html>

@@ -1,0 +1,28 @@
+
+
+.row-content {
+    margin:0px auto;
+    padding: 0x 0px 0px 0px;
+    border-bottom: 0px ridge;
+    min-height:100px;
+}
+
+.row-footer{
+    background-color: #AfAfAf;
+    margin:0px auto;
+    padding: 20px 0px 20px 0px;
+}
+
+
+body{
+    padding:0px 0px 0px 0px;
+    z-index:0;
+}
+
+.container{
+    padding: 0;
+}
+
+.container-fluid {
+     padding:0;
+}
