@@ -303,11 +303,19 @@ function readAvailabelGuide(){
         dataType: 'jsonp',
         //jsonp: "callback"
         success: function(response){
-
-            text=response[2][0];
+            if( !( typeof response === "undefined")){
+                text=response[2][0];
             console.log(text);
+             if( ( typeof text === "undefined") || text==''){
+               text=landmark.name;
+             }
+
             content[landmark.name]=text;
              responsiveVoice.speak(text, "UK English Male",{rate:0.8});
+            }else{
+              responsiveVoice.speak(landmark.name, "UK English Male",{rate:0.8});
+            }
+            
             
         }
 
